@@ -1,7 +1,7 @@
 {
                     
     "name"          : "cmudict-to-sqlite",
-    "version"       : "0.1",
+    "version"       : "0.1.0",
     "main"          : "./src/cmudict-to-sqlite.js",
     "description"   : "A utility for parsing the CMU Pronouncing Dictionary into an sqlite database using Node.js",
     "keywords"      : ["cmudict", "CMU Pronouncing Dictionary", "atropa"],
