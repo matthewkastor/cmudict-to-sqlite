@@ -13,14 +13,24 @@ using Node.js
 >
 > [Wikipedia](http://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary)
 
+A copy of cmudict.0.7a is included in the root of this project as is a copy of 
+the sqlite database generated from it. The reasons I did not simply distribute 
+the database are:
+
+* The CMU Pronouncing Dictionary may be updated in the future
+* SQLite may be updated and users may want to regenerate the database
+* Users may wish to add their own updates to the cmudict and want to regenerate the database
+* Users may wish to backup their database to the same format of the cmudict and run comparisons on the text of the original
+
+
 ## Install it on node from npm
 
 `npm install cmudict-to-sqlite`
 
 ## Usage
 
-Converting the CMU Pronouncing Dictionary from the flat file `cmudict` into 
-an sqlite database:
+
+### Converting the CMU Pronouncing Dictionary from the flat file `cmudict` into an sqlite database:
 
 ```
 var cmu = require('cmudict-to-sqlite');
@@ -28,8 +38,14 @@ var fileName = 'cmudict.0.7a';
 cmu.cmudictToSqliteDb(fileName);
 ```
 
-Reading the CMU Pronouncing Dictionary from the flat file `cmudict` into 
-a JavaScript array:
+Note that on a quad core AMD with 6 gigs of ram running windows 7 x64 and 
+64 bit node v 0.8.18, it takes a few minutes to write out the database. While 
+the database is being written the cursor will just sit there and blink. Be 
+patient, it's writing a dictionary.
+
+
+
+### Reading the CMU Pronouncing Dictionary from the flat file `cmudict` into a JavaScript array:
 
 ```
 var cmu = require('cmudict-to-sqlite');
@@ -44,6 +60,10 @@ while (count > 0) {
     count -= 1;
 }
 ```
+
+Note that it doesn't take much time at all to parse the cmudict into an array 
+but, it's much more difficult to query an array than it is to query a database.
+
 
 ## Intellisense Support and Documentation
 
