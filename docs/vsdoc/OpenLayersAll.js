@@ -37,8 +37,8 @@
 
     window.CmudictDb = function(cmudictFile){
         /// <summary></summary>
-        /// <param name="cmudictFile" type="String">The name and location of the cmudict database 
-        ///  generated with cmudictToSqliteDb.</param>
+        /// <param name="cmudictFile" type="String">Optional. The name and location of the cmudict 
+        ///  database generated with cmudictToSqliteDb. Defaults to cmudict.0.7a.sqlite.</param>
         /// <returns type="CmudictDb"/>
     };
 

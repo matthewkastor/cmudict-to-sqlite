@@ -98,8 +98,8 @@ function cmudictToSqliteDb (fileName) {
  *  finished using the database so that the database may be closed properly.
  * @class Represents the cmudict database and provides convenience methods for 
  * common tasks.
- * @param {String} cmudictFile The name and location of the cmudict database 
- *  generated with cmudictToSqliteDb.
+ * @param {String} cmudictFile Optional. The name and location of the cmudict 
+ *  database generated with cmudictToSqliteDb. Defaults to cmudict.0.7a.sqlite.
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130518
  * @see cmudictToSqliteDb

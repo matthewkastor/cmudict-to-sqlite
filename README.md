@@ -16,7 +16,7 @@ manipulating it.
 >
 > [Wikipedia](http://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary)
 
-A copy of cmudict.0.7a is included in the root of this project as is a copy of 
+A copy of cmudict.0.7a is included in the root of this project, as is a copy of 
 the sqlite database generated from it. The reasons I did not simply distribute 
 the database are:
 
