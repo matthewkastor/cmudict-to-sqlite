@@ -3,6 +3,9 @@
 A utility for parsing the CMU Pronouncing Dictionary into an sqlite database 
 using Node.js
 
+Also included is a helper class for looking up information in the database and 
+manipulating it.
+
 > The CMU Pronouncing Dictionary (also known as cmudict) is a public domain 
 > pronouncing dictionary created by Carnegie Mellon University (CMU). It 
 > defines a mapping from English words to their North American pronunciations, 
@@ -44,8 +47,28 @@ the database is being written the cursor will just sit there and blink. Be
 patient, it's writing a dictionary.
 
 
+### Looking up information in the database
+
+Once the SQLite database is generated you should be able to use whatever tools 
+are available for looking up and manipulating the data. I've found 
+[SQLite Studio](http://sqlitestudio.pl/) to be my favorite program for database 
+management in SQLite. 
+
+I have however, written a small class called CmudictDb for accessing the 
+database and looking up information in it. So don't worry, you can look 
+up information without learning any sql... just this random javascript 
+thing I'm making up as I go along... The class is documented in the 
+documentation which accompanies this here Node.js module and since I 
+absolutely hate massive README files I'm not going to copy and paste it 
+here. See the link below if you're just itching to read the docs online, 
+right now. :D 
+
+
 
 ### Reading the CMU Pronouncing Dictionary from the flat file `cmudict` into a JavaScript array:
+
+I export this function in case someone else wants to use it to import the 
+cmudict into some other database. 
 
 ```
 var cmu = require('cmudict-to-sqlite');
