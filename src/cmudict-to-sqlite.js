@@ -19,7 +19,7 @@
  */
  
 /**
- * Reads the cmudict into a JavaScript array
+ * Reads the cmudict file into a JavaScript array
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130517
  * @requires fs
@@ -58,7 +58,7 @@ function cmudictToArray (fileName) {
 }
 
 /**
- * Parses the cmudict into an SQLite database
+ * Parses the cmudict file into an SQLite database.
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130517
  * @requires sqlite3
