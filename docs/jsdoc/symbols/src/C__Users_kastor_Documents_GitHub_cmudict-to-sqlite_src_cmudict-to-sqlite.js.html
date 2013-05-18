@@ -17,85 +17,220 @@
 <span class='line'> 10</span> </span><span class="COMM">/**
 <span class='line'> 11</span>  * @fileOverview A utility for parsing the CMU Pronouncing Dictionary into an sqlite database using Node.js
 <span class='line'> 12</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
-<span class='line'> 13</span>  * @version 0.1.0
+<span class='line'> 13</span>  * @version 0.2.0
 <span class='line'> 14</span>  * @requires fs
 <span class='line'> 15</span>  * @requires sqlite3
 <span class='line'> 16</span>  * @exports cmudictToArray
 <span class='line'> 17</span>  * @exports cmudictToSqliteDb
-<span class='line'> 18</span>  */</span><span class="WHIT">
-<span class='line'> 19</span> </span><span class="WHIT"> </span><span class="WHIT">
-<span class='line'> 20</span> </span><span class="COMM">/**
-<span class='line'> 21</span>  * Reads the cmudict into a JavaScript array
-<span class='line'> 22</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
-<span class='line'> 23</span>  * @version 20130517
-<span class='line'> 24</span>  * @requires fs
-<span class='line'> 25</span>  * @function
-<span class='line'> 26</span>  * @param {String} fileName The name and location of the cmudict to parse.
-<span class='line'> 27</span>  * @example
-<span class='line'> 28</span>  * // Reading the CMU Pronouncing Dictionary from the flat file `cmudict` into 
-<span class='line'> 29</span>  * // a JavaScript array:
-<span class='line'> 30</span>  * 
-<span class='line'> 31</span>  * var cmu = require('cmudict-to-sqlite');
-<span class='line'> 32</span>  * var fileName = 'cmudict.0.7a';
-<span class='line'> 33</span>  * var cmudict = cmu.cmudictToArray(fileName);
-<span class='line'> 34</span>  * // the array will be huge and on my machine it takes longer to display it to 
-<span class='line'> 35</span>  * // the console than it does to parse the file so, let's just display the first 
-<span class='line'> 36</span>  * // thirty records
-<span class='line'> 37</span>  * var count = 30;
-<span class='line'> 38</span>  * while (count > 0) {
-<span class='line'> 39</span>  *     console.log(cmudict[count]);
-<span class='line'> 40</span>  *     count -= 1;
-<span class='line'> 41</span>  * }
-<span class='line'> 42</span>  */</span><span class="WHIT">
-<span class='line'> 43</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">cmudictToArray</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 44</span> </span><span class="WHIT">    </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 45</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">fs</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'fs'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 46</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fs.readFileSync</span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'utf8'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 47</span> </span><span class="WHIT">    </span><span class="WHIT">
-<span class='line'> 48</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.replace</span><span class="PUNC">(</span><span class="REGX">/;;;.*/g</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// strip comments</span><span class="WHIT">
-<span class='line'> 49</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.replace</span><span class="PUNC">(</span><span class="REGX">/(\r\n|\r|\n)/g</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'\n'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// normalize line endings</span><span class="WHIT">
-<span class='line'> 50</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.trim</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// remove superfluous white space</span><span class="WHIT">
-<span class='line'> 51</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.split</span><span class="PUNC">(</span><span class="STRN">'\n'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// split into array of lines</span><span class="WHIT">
-<span class='line'> 52</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.map</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">line</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 53</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">line.split</span><span class="PUNC">(</span><span class="STRN">'  '</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 54</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// array items subdivided into word @ 0 code @ 1</span><span class="WHIT">
-<span class='line'> 55</span> </span><span class="WHIT">    </span><span class="WHIT">
-<span class='line'> 56</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cmudict</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 57</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 58</span> 
-<span class='line'> 59</span> </span><span class="COMM">/**
-<span class='line'> 60</span>  * Parses the cmudict into an SQLite database
-<span class='line'> 61</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
-<span class='line'> 62</span>  * @version 20130517
-<span class='line'> 63</span>  * @requires sqlite3
-<span class='line'> 64</span>  * @requires cmudictToArray
-<span class='line'> 65</span>  * @function
-<span class='line'> 66</span>  * @param {String} fileName The name and location of the cmudict to parse.
-<span class='line'> 67</span>  * @example
-<span class='line'> 68</span>  * // Converting the CMU Pronouncing Dictionary from the flat file `cmudict` into 
-<span class='line'> 69</span>  * // an sqlite database:
-<span class='line'> 70</span>  * 
-<span class='line'> 71</span>  * var cmu = require('cmudict-to-sqlite');
-<span class='line'> 72</span>  * var fileName = 'cmudict.0.7a';
-<span class='line'> 73</span>  * cmu.cmudictToSqliteDb(fileName);
-<span class='line'> 74</span>  */</span><span class="WHIT">
-<span class='line'> 75</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">cmudictToSqliteDb</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 76</span> </span><span class="WHIT">    </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 77</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">sqlite3</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'sqlite3'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">verbose</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 78</span> 
-<span class='line'> 79</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">db</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">sqlite3.Database</span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'.sqlite'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 80</span> </span><span class="WHIT">    </span><span class="NAME">db.exec</span><span class="PUNC">(</span><span class="STRN">'PRAGMA journal_mode = MEMORY;'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 81</span> </span><span class="WHIT">    </span><span class="WHIT">
-<span class='line'> 82</span> </span><span class="WHIT">    </span><span class="NAME">db.exec</span><span class="PUNC">(</span><span class="STRN">"CREATE TABLE cmudict (word TEXT, code TEXT)"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 83</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">stmt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">db.prepare</span><span class="PUNC">(</span><span class="STRN">"INSERT INTO cmudict VALUES (?, ?)"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 84</span> </span><span class="WHIT">        </span><span class="NAME">cmudictToArray</span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">forEach</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">entry</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 85</span> </span><span class="WHIT">            </span><span class="NAME">stmt.run</span><span class="PUNC">(</span><span class="NAME">entry</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">entry</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 86</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 87</span> </span><span class="WHIT">        </span><span class="NAME">stmt.finalize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 88</span> </span><span class="WHIT">        </span><span class="NAME">db.close</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 89</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 90</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 91</span> 
-<span class='line'> 92</span> </span><span class="NAME">module.exports.cmudictToArray</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudictToArray</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 93</span> </span><span class="NAME">module.exports.cmudictToSqliteDb</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudictToSqliteDb</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 94</span> </span></pre></body></html>
+<span class='line'> 18</span>  * @exports CmudictDb
+<span class='line'> 19</span>  */</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="COMM">/**
+<span class='line'> 22</span>  * Reads the cmudict file into a JavaScript array
+<span class='line'> 23</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
+<span class='line'> 24</span>  * @version 20130517
+<span class='line'> 25</span>  * @requires fs
+<span class='line'> 26</span>  * @function
+<span class='line'> 27</span>  * @param {String} fileName The name and location of the cmudict to parse.
+<span class='line'> 28</span>  * @example
+<span class='line'> 29</span>  * // Reading the CMU Pronouncing Dictionary from the flat file `cmudict` into 
+<span class='line'> 30</span>  * // a JavaScript array:
+<span class='line'> 31</span>  * 
+<span class='line'> 32</span>  * var cmu = require('cmudict-to-sqlite');
+<span class='line'> 33</span>  * var fileName = 'cmudict.0.7a';
+<span class='line'> 34</span>  * var cmudict = cmu.cmudictToArray(fileName);
+<span class='line'> 35</span>  * // the array will be huge and on my machine it takes longer to display it to 
+<span class='line'> 36</span>  * // the console than it does to parse the file so, let's just display the first 
+<span class='line'> 37</span>  * // thirty records
+<span class='line'> 38</span>  * var count = 30;
+<span class='line'> 39</span>  * while (count > 0) {
+<span class='line'> 40</span>  *     console.log(cmudict[count]);
+<span class='line'> 41</span>  *     count -= 1;
+<span class='line'> 42</span>  * }
+<span class='line'> 43</span>  */</span><span class="WHIT">
+<span class='line'> 44</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">cmudictToArray</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="WHIT">    </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">fs</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'fs'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fs.readFileSync</span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'utf8'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="WHIT">    </span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.replace</span><span class="PUNC">(</span><span class="REGX">/;;;.*/g</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// strip comments</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.replace</span><span class="PUNC">(</span><span class="REGX">/(\r\n|\r|\n)/g</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'\n'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// normalize line endings</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.trim</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// remove superfluous white space</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.split</span><span class="PUNC">(</span><span class="STRN">'\n'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// split into array of lines</span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="WHIT">    </span><span class="NAME">cmudict</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudict.map</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">line</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">line.split</span><span class="PUNC">(</span><span class="STRN">'  '</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// array items subdivided into word @ 0 code @ 1</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="WHIT">    </span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">cmudict</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 59</span> 
+<span class='line'> 60</span> </span><span class="COMM">/**
+<span class='line'> 61</span>  * Parses the cmudict file into an SQLite database.
+<span class='line'> 62</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
+<span class='line'> 63</span>  * @version 20130517
+<span class='line'> 64</span>  * @requires sqlite3
+<span class='line'> 65</span>  * @requires cmudictToArray
+<span class='line'> 66</span>  * @function
+<span class='line'> 67</span>  * @param {String} fileName The name and location of the cmudict to parse.
+<span class='line'> 68</span>  * @example
+<span class='line'> 69</span>  * // Converting the CMU Pronouncing Dictionary from the flat file `cmudict` into 
+<span class='line'> 70</span>  * // an sqlite database:
+<span class='line'> 71</span>  * 
+<span class='line'> 72</span>  * var cmu = require('cmudict-to-sqlite');
+<span class='line'> 73</span>  * var fileName = 'cmudict.0.7a';
+<span class='line'> 74</span>  * cmu.cmudictToSqliteDb(fileName);
+<span class='line'> 75</span>  */</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">cmudictToSqliteDb</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="WHIT">    </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">sqlite3</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'sqlite3'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">verbose</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 79</span> 
+<span class='line'> 80</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">db</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">sqlite3.Database</span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'.sqlite'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">    </span><span class="NAME">db.exec</span><span class="PUNC">(</span><span class="STRN">'PRAGMA journal_mode = MEMORY;'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">    </span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">    </span><span class="NAME">db.exec</span><span class="PUNC">(</span><span class="STRN">"CREATE TABLE cmudict (word TEXT, code TEXT)"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">stmt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">db.prepare</span><span class="PUNC">(</span><span class="STRN">"INSERT INTO cmudict VALUES (?, ?)"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">        </span><span class="NAME">cmudictToArray</span><span class="PUNC">(</span><span class="NAME">fileName</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">forEach</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">entry</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">            </span><span class="NAME">stmt.run</span><span class="PUNC">(</span><span class="NAME">entry</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">entry</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">        </span><span class="NAME">stmt.finalize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">        </span><span class="NAME">db.close</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 92</span> 
+<span class='line'> 93</span> </span><span class="COMM">/**
+<span class='line'> 94</span>  * Represents the cmudict database and provides convenience methods for common 
+<span class='line'> 95</span>  *  tasks. When creating a new instance of the 
+<span class='line'> 96</span>  *  CmudictDb the given database file will be opened and several prepared 
+<span class='line'> 97</span>  *  statements will be loaded. Be sure to call the unload method when you are 
+<span class='line'> 98</span>  *  finished using the database so that the database may be closed properly.
+<span class='line'> 99</span>  * @class Represents the cmudict database and provides convenience methods for 
+<span class='line'>100</span>  * common tasks.
+<span class='line'>101</span>  * @param {String} cmudictFile The name and location of the cmudict database 
+<span class='line'>102</span>  *  generated with cmudictToSqliteDb.
+<span class='line'>103</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
+<span class='line'>104</span>  * @version 20130518
+<span class='line'>105</span>  * @see cmudictToSqliteDb
+<span class='line'>106</span>  * @requires sqlite3
+<span class='line'>107</span>  */</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">CmudictDb</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">cmudictFile</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">my</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">sqlite3</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'sqlite3'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">verbose</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cmudictFile</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudictFile</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">'cmudict.0.7a.sqlite'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">    </span><span class="NAME">my.db</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">sqlite3.Database</span><span class="PUNC">(</span><span class="NAME">cmudictFile</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">    </span><span class="NAME">my.db.exec</span><span class="PUNC">(</span><span class="STRN">'PRAGMA journal_mode = MEMORY;'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">    </span><span class="NAME">my.preparedStatements</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">        </span><span class="STRN">"lookupWord"</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">my.db.prepare</span><span class="PUNC">(</span><span class="STRN">"SELECT * FROM cmudict WHERE word IS ?"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">        </span><span class="STRN">"lookupCode"</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">my.db.prepare</span><span class="PUNC">(</span><span class="STRN">"SELECT * FROM cmudict WHERE code IS ?"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">        </span><span class="STRN">"fuzzyLookupWord"</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">my.db.prepare</span><span class="PUNC">(</span><span class="STRN">"SELECT * FROM cmudict WHERE word LIKE ?"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">        </span><span class="STRN">"fuzzyLookupCode"</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">my.db.prepare</span><span class="PUNC">(</span><span class="STRN">"SELECT * FROM cmudict WHERE code LIKE ?"</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="COMM">/**
+<span class='line'>122</span>  * Finalizes all preparedStatements and closes the database.
+<span class='line'>123</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
+<span class='line'>124</span>  * @version 20130518
+<span class='line'>125</span>  */</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="NAME">CmudictDb.prototype.unload</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">unload</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">my</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">    </span><span class="NAME">Object.keys</span><span class="PUNC">(</span><span class="NAME">my.preparedStatements</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">forEach</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">stmt</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">        </span><span class="NAME">my.preparedStatements</span><span class="PUNC">[</span><span class="NAME">stmt</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">finalize</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">    </span><span class="NAME">my.db.close</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="COMM">/**
+<span class='line'>134</span>  * Searches for the given word.
+<span class='line'>135</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
+<span class='line'>136</span>  * @version 20130518
+<span class='line'>137</span>  * @param {String} word The word to look for in the words field.
+<span class='line'>138</span>  * @param {Function} callback The callback to execute when results have been 
+<span class='line'>139</span>  *  retreived. Takes two arguments: error and rows, in that order.
+<span class='line'>140</span>  * @example
+<span class='line'>141</span>  * var cmu = require('cmudict-to-sqlite');
+<span class='line'>142</span>  * cmu = new cmu.CmudictDb();
+<span class='line'>143</span>  * cmu.lookupWord('zebra', function (err, rows) {
+<span class='line'>144</span>  *     console.log('lookupWord Results');
+<span class='line'>145</span>  *     console.log(rows);
+<span class='line'>146</span>  * });
+<span class='line'>147</span>  * // do other stuff with the database . . .
+<span class='line'>148</span>  * cmu.unload();
+<span class='line'>149</span>  */</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="NAME">CmudictDb.prototype.lookupWord</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">lookupWord</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">word</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">my</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">    </span><span class="NAME">word</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">word.toUpperCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">    </span><span class="NAME">my.preparedStatements.lookupWord.all</span><span class="PUNC">(</span><span class="NAME">word</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="COMM">/**
+<span class='line'>156</span>  * Searches for the given code.
+<span class='line'>157</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
+<span class='line'>158</span>  * @version 20130518
+<span class='line'>159</span>  * @param {String} code The code to look for in the code field.
+<span class='line'>160</span>  * @param {Function} callback The callback to execute when results have been 
+<span class='line'>161</span>  *  retreived. Takes two arguments: error and rows, in that order.
+<span class='line'>162</span>  * @example
+<span class='line'>163</span>  * var cmu = require('cmudict-to-sqlite');
+<span class='line'>164</span>  * cmu = new cmu.CmudictDb();
+<span class='line'>165</span>  * cmu.lookupCode('ah1 p s ay1 z', function (err, rows) {
+<span class='line'>166</span>  *     console.log('lookupCode Results');
+<span class='line'>167</span>  *     console.log(rows);
+<span class='line'>168</span>  * });
+<span class='line'>169</span>  * // do other stuff with the database . . .
+<span class='line'>170</span>  * cmu.unload();
+<span class='line'>171</span>  */</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="NAME">CmudictDb.prototype.lookupCode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">lookupCode</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">code</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">my</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">    </span><span class="NAME">code</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">code.toUpperCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">    </span><span class="NAME">my.preparedStatements.lookupCode.all</span><span class="PUNC">(</span><span class="NAME">code</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="COMM">/**
+<span class='line'>178</span>  * Searches words for the given pattern. Both, the underscore and percent 
+<span class='line'>179</span>  *  symbol, will match any character. The underscore consumes a single character 
+<span class='line'>180</span>  *  and the percent symbol consumes multiple characters.
+<span class='line'>181</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
+<span class='line'>182</span>  * @version 20130518
+<span class='line'>183</span>  * @param {String} word The pattern to look for in the word field.
+<span class='line'>184</span>  * @param {Function} callback The callback to execute when results have been 
+<span class='line'>185</span>  *  retreived. Takes two arguments: error and rows, in that order.
+<span class='line'>186</span>  * @example
+<span class='line'>187</span>  * var cmu = require('cmudict-to-sqlite');
+<span class='line'>188</span>  * cmu = new cmu.CmudictDb();
+<span class='line'>189</span>  * cmu.fuzzyLookupWord('zeb%', function (err, rows) {
+<span class='line'>190</span>  *     console.log('fuzzyLookupWord Results');
+<span class='line'>191</span>  *     console.log(rows);
+<span class='line'>192</span>  * });
+<span class='line'>193</span>  * // do other stuff with the database . . .
+<span class='line'>194</span>  * cmu.unload();
+<span class='line'>195</span>  */</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="NAME">CmudictDb.prototype.fuzzyLookupWord</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">fuzzyLookupWord</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">word</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">my</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">    </span><span class="NAME">word</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">word.toUpperCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">    </span><span class="NAME">my.preparedStatements.fuzzyLookupWord.all</span><span class="PUNC">(</span><span class="NAME">word</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="COMM">/**
+<span class='line'>202</span>  * Searches codes for the given pattern. Both, the underscore and percent 
+<span class='line'>203</span>  *  symbol, will match any character. The underscore consumes a single character 
+<span class='line'>204</span>  *  and the percent symbol consumes multiple characters.
+<span class='line'>205</span>  * @author &lt;a href="mailto:matthewkastor@gmail.com">Matthew Kastor&lt;/a>
+<span class='line'>206</span>  * @version 20130518
+<span class='line'>207</span>  * @param {String} code The pattern to look for in the code field.
+<span class='line'>208</span>  * @param {Function} callback The callback to execute when results have been 
+<span class='line'>209</span>  *  retreived. Takes two arguments: error and rows, in that order.
+<span class='line'>210</span>  * @example
+<span class='line'>211</span>  * var cmu = require('cmudict-to-sqlite');
+<span class='line'>212</span>  * cmu = new cmu.CmudictDb();
+<span class='line'>213</span>  * cmu.fuzzyLookupCode('%s ay1 z%', function (err, rows) {
+<span class='line'>214</span>  *     console.log('fuzzyLookupCode Results');
+<span class='line'>215</span>  *     console.log(rows);
+<span class='line'>216</span>  * });
+<span class='line'>217</span>  * // do other stuff with the database . . .
+<span class='line'>218</span>  * cmu.unload();
+<span class='line'>219</span>  */</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="NAME">CmudictDb.prototype.fuzzyLookupCode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">fuzzyLookupCode</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">code</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">my</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">    </span><span class="NAME">code</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">code.toUpperCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">    </span><span class="NAME">my.preparedStatements.fuzzyLookupCode.all</span><span class="PUNC">(</span><span class="NAME">code</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>225</span> 
+<span class='line'>226</span> 
+<span class='line'>227</span> </span><span class="NAME">module.exports.cmudictToArray</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudictToArray</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>228</span> </span><span class="NAME">module.exports.cmudictToSqliteDb</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">cmudictToSqliteDb</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>229</span> </span><span class="NAME">module.exports.CmudictDb</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CmudictDb</span><span class="PUNC">;</span></pre></body></html>
