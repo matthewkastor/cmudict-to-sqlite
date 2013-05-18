@@ -106,9 +106,10 @@ function cmudictToSqliteDb (fileName) {
  * @requires sqlite3
  */
 function CmudictDb (cmudictFile) {
+    'use strict';
     var my = this;
     var sqlite3 = require('sqlite3').verbose();
-    var cmudictFile = cmudictFile || 'cmudict.0.7a.sqlite';
+    cmudictFile = cmudictFile || 'cmudict.0.7a.sqlite';
     my.db = new sqlite3.Database(cmudictFile);
     my.db.exec('PRAGMA journal_mode = MEMORY;');
     my.preparedStatements = {
@@ -124,6 +125,7 @@ function CmudictDb (cmudictFile) {
  * @version 20130518
  */
 CmudictDb.prototype.unload = function unload () {
+    'use strict';
     var my = this;
     Object.keys(my.preparedStatements).forEach(function (stmt) {
         my.preparedStatements[stmt].finalize();
@@ -148,6 +150,7 @@ CmudictDb.prototype.unload = function unload () {
  * cmu.unload();
  */
 CmudictDb.prototype.lookupWord = function lookupWord (word, callback) {
+    'use strict';
     var my = this;
     word = word.toUpperCase();
     my.preparedStatements.lookupWord.all(word, callback);
@@ -170,6 +173,7 @@ CmudictDb.prototype.lookupWord = function lookupWord (word, callback) {
  * cmu.unload();
  */
 CmudictDb.prototype.lookupCode = function lookupCode (code, callback) {
+    'use strict';
     var my = this;
     code = code.toUpperCase();
     my.preparedStatements.lookupCode.all(code, callback);
@@ -194,6 +198,7 @@ CmudictDb.prototype.lookupCode = function lookupCode (code, callback) {
  * cmu.unload();
  */
 CmudictDb.prototype.fuzzyLookupWord = function fuzzyLookupWord (word, callback) {
+    'use strict';
     var my = this;
     word = word.toUpperCase();
     my.preparedStatements.fuzzyLookupWord.all(word, callback);
@@ -218,6 +223,7 @@ CmudictDb.prototype.fuzzyLookupWord = function fuzzyLookupWord (word, callback) 
  * cmu.unload();
  */
 CmudictDb.prototype.fuzzyLookupCode = function fuzzyLookupCode (code, callback) {
+    'use strict';
     var my = this;
     code = code.toUpperCase();
     my.preparedStatements.fuzzyLookupCode.all(code, callback);
