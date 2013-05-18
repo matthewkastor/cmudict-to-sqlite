@@ -4,7 +4,7 @@
     "version"       : "0.1.0-1",
     "main"          : "./src/cmudict-to-sqlite.js",
     "description"   : "A utility for parsing the CMU Pronouncing Dictionary into an sqlite database using Node.js",
-    "keywords"      : ["cmudict", "CMU Pronouncing Dictionary", "atropa"],
+    "keywords"      : ["cmudict", "CMU Pronouncing Dictionary", "nlp", "language", "linguistics", "atropa"],
     "homepage"      : "https://github.com/matthewkastor/cmudict-to-sqlite/",
     "bugs"          : "https://github.com/matthewkastor/cmudict-to-sqlite/issues",
     "author"        : {
