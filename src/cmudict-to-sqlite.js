@@ -123,7 +123,6 @@ function CmudictDb (cmudictFile) {
     my.preparedStatements = {
         "lookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word IS ?"),
         "lookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code IS ?"),
-        "findPhoneme" : my.db.prepare("SELECT * FROM cmudict WHERE code LIKE ?"),
         "fuzzyLookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word LIKE ?"),
         "fuzzyLookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code LIKE ?"),
         "addEntry" : my.db.prepare("INSERT INTO cmudict VALUES (?,?);"),
@@ -194,35 +193,6 @@ CmudictDb.prototype.lookupCode = function lookupCode (code, callback) {
     my.preparedStatements.lookupCode.all(code, callback);
 };
 /**
- * Searches for the given phoneme. Through creative use of wildcards, this 
- *  method may be used to find assonance, consonance, rhyme, etc. Both, the 
- *  underscore and percent symbol, will match any character. The underscore 
- *  consumes a single character and the percent symbol consumes multiple 
- *  characters.
- * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
- * @version 20130519
- * @param {String} phoneme The phoneme to look for in the code field.
- * @param {Function} callback The callback to execute when results have been 
- *  retreived. Takes two arguments: error and rows, in that order.
- * @example
- * var cmu = require('cmudict-to-sqlite');
- * cmu = new cmu.CmudictDb();
- * cmu.findPhoneme('%r ah1 p t%', function (err, rows) {
- *     // finds words containing the sound "rupt" i.e. erupt and corrupt
- *     console.log('findPhoneme Results for %r ah1 p t%');
- *     if (err) { console.log(err); }
- *     if (rows) { console.log(rows); }
- * });
- * // do other stuff with the database . . .
- * cmu.unload();
- */
-CmudictDb.prototype.findPhoneme = function findPhoneme (phoneme, callback) {
-    'use strict';
-    var my = this;
-    phoneme = phoneme.toUpperCase();
-    my.preparedStatements.findPhoneme.all(phoneme, callback);
-};
-/**
  * Searches words for the given pattern. Both, the underscore and percent 
  *  symbol, will match any character. The underscore consumes a single character 
  *  and the percent symbol consumes multiple characters.
@@ -249,9 +219,11 @@ CmudictDb.prototype.fuzzyLookupWord = function fuzzyLookupWord (word, callback) 
     my.preparedStatements.fuzzyLookupWord.all(word, callback);
 };
 /**
- * Searches codes for the given pattern. Both, the underscore and percent 
- *  symbol, will match any character. The underscore consumes a single character 
- *  and the percent symbol consumes multiple characters.
+ * Searches for the given phoneme(s). Through creative use of wildcards, this 
+ *  method may be used to find assonance, consonance, rhyme, etc. Both, the 
+ *  underscore and percent symbol, will match any character. The underscore 
+ *  consumes a single character and the percent symbol consumes multiple 
+ *  characters.
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130518
  * @param {String} code The pattern to look for in the code field.
@@ -260,8 +232,9 @@ CmudictDb.prototype.fuzzyLookupWord = function fuzzyLookupWord (word, callback) 
  * @example
  * var cmu = require('cmudict-to-sqlite');
  * cmu = new cmu.CmudictDb();
- * cmu.fuzzyLookupCode('%s ay1 z%', function (err, rows) {
- *     console.log('fuzzyLookupCode Results');
+ * cmu.fuzzyLookupCode('%r ah1 p t%', function (err, rows) {
+ *     // finds words containing the sound "rupt" i.e. erupt and corrupt
+ *     console.log('fuzzyLookupCode Results for %r ah1 p t%');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
  * });

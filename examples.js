@@ -22,13 +22,6 @@ cmu.lookupCode('ah1 p s ay1 z', function (err, rows) {
     if (err) { console.log(err); }
     if (rows) { console.log(rows); }
 });
-cmu.findPhoneme('%r ah1 p t%', function (err, rows) {
-    'use strict';
-    // finds words containing the sound "rupt" i.e. erupt and corrupt
-    console.log('findPhoneme Results for %r ah1 p t%');
-    if (err) { console.log(err); }
-    if (rows) { console.log(rows); }
-});
 
 // wrapping fuzzyLookupWord example for use below.
 function show (word) {
@@ -41,9 +34,9 @@ function show (word) {
 }
 show('zeb%');
 
-cmu.fuzzyLookupCode('%s ay1 z%', function (err, rows) {
+cmu.fuzzyLookupCode('%r ah1 p t%', function (err, rows) {
     'use strict';
-    console.log('fuzzyLookupCode Results for %s ay1 z%');
+    console.log('fuzzyLookupCode Results for %r ah1 p t%');
     if (err) { console.log(err); }
     if (rows) { console.log(rows); }
 });
