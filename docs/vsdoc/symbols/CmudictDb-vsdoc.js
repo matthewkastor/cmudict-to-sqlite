@@ -42,10 +42,43 @@
         }, 
         
         fuzzyLookupCode: function(code, callback) {
-            /// <summary>Searches codes for the given pattern. Both, the underscore and percent 
-            ///  symbol, will match any character. The underscore consumes a single character 
-            ///  and the percent symbol consumes multiple characters.</summary>
+            /// <summary>Searches for the given phoneme(s). Through creative use of wildcards, this 
+            ///  method may be used to find assonance, consonance, rhyme, etc. Both, the 
+            ///  underscore and percent symbol, will match any character. The underscore 
+            ///  consumes a single character and the percent symbol consumes multiple 
+            ///  characters.</summary>
             /// <param name="code" type="String">The pattern to look for in the code field.</param>
+            /// <param name="callback" type="Function">The callback to execute when results have been 
+            ///  retreived. Takes two arguments: error and rows, in that order.</param>
+        }, 
+        
+        addEntry: function(word, code, callback) {
+            /// <summary>Adds a new record to the database.</summary>
+            /// <param name="word" type="String">The word to add to the word field.</param>
+            /// <param name="code" type="String">The code to add to the code field.</param>
+            /// <param name="callback" type="Function">The callback to execute when results have been 
+            ///  retreived. Takes two arguments: error and rows, in that order.</param>
+        }, 
+        
+        updateWord: function(updatedWord, oldWord, callback) {
+            /// <summary>Fix misspelled words or typos in words.</summary>
+            /// <param name="updatedWord" type="String">The corrected word.</param>
+            /// <param name="oldWord" type="String">The misspelled word.</param>
+            /// <param name="callback" type="Function">The callback to execute when results have been 
+            ///  retreived. Takes two arguments: error and rows, in that order.</param>
+        }, 
+        
+        updateCode: function(updatedCode, oldCode, callback) {
+            /// <summary>Fix typos in codes.</summary>
+            /// <param name="updatedCode" type="String">The corrected code.</param>
+            /// <param name="oldCode" type="String">The misspelled code.</param>
+            /// <param name="callback" type="Function">The callback to execute when results have been 
+            ///  retreived. Takes two arguments: error and rows, in that order.</param>
+        }, 
+        
+        "delete": function(word, callback) {
+            /// <summary>Delete a record from the database.</summary>
+            /// <param name="word" type="String">The word to remove.</param>
             /// <param name="callback" type="Function">The callback to execute when results have been 
             ///  retreived. Takes two arguments: error and rows, in that order.</param>
         }

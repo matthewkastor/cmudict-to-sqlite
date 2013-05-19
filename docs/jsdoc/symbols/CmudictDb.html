@@ -263,9 +263,27 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#addEntry">addEntry</a></b>(word, code, callback)
+								</div>
+								<div class="description">Adds a new record to the database.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#deleteEntry">deleteEntry</a></b>(word, callback)
+								</div>
+								<div class="description">Delete a record from the database.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#fuzzyLookupCode">fuzzyLookupCode</a></b>(code, callback)
 								</div>
-								<div class="description">Searches codes for the given pattern.</div>
+								<div class="description">Searches for the given phoneme(s).</div>
 							</td>
 						</tr>
 					
@@ -302,6 +320,24 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#unload">unload</a></b>()
 								</div>
 								<div class="description">Finalizes all preparedStatements and closes the database.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#updateCode">updateCode</a></b>(updatedCode, oldCode, callback)
+								</div>
+								<div class="description">Fix typos in codes.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#updateWord">updateWord</a></b>(updatedWord, oldWord, callback)
+								</div>
+								<div class="description">Fix misspelled words or typos in words.</div>
 							</td>
 						</tr>
 					
@@ -378,6 +414,104 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
+					<a name="addEntry"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>addEntry</b>(word, code, callback)
+					
+					</div>
+					<div class="description">
+						Adds a new record to the database.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.addEntry('superfakeword', 'xo xo xo1', function (err, rows) {    console.log('addEntry Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>word</b>
+									
+								</dt>
+								<dd>The word to add to the word field.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>code</b>
+									
+								</dt>
+								<dd>The code to add to the code field.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="deleteEntry"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>deleteEntry</b>(word, callback)
+					
+					</div>
+					<div class="description">
+						Delete a record from the database.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.deleteEntry('superfakewordzzz', function (err, rows) {    console.log('deleteEntry Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>word</b>
+									
+								</dt>
+								<dd>The word to remove.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="fuzzyLookupCode"> </a>
 					<div class="fixedFont">
 					
@@ -386,14 +520,14 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Searches codes for the given pattern. Both, the underscore and percent  symbol, will match any character. The underscore consumes a single character  and the percent symbol consumes multiple characters.
+						Searches for the given phoneme(s). Through creative use of wildcards, this  method may be used to find assonance, consonance, rhyme, etc. Both, the  underscore and percent symbol, will match any character. The underscore  consumes a single character and the percent symbol consumes multiple  characters.
 						
 						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
 					</div>
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.fuzzyLookupCode('%s ay1 z%', function (err, rows) {    console.log('fuzzyLookupCode Results');    console.log(rows);});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.fuzzyLookupCode('%r ah1 p t%', function (err, rows) {    // finds words containing the sound "rupt" i.e. erupt and corrupt    console.log('fuzzyLookupCode Results for %r ah1 p t%');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
 					
 					
 					
@@ -439,7 +573,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.fuzzyLookupWord('zeb%', function (err, rows) {    console.log('fuzzyLookupWord Results');    console.log(rows);});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.fuzzyLookupWord('zeb%', function (err, rows) {    console.log('fuzzyLookupWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
 					
 					
 					
@@ -485,7 +619,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupCode('ah1 p s ay1 z', function (err, rows) {    console.log('lookupCode Results');    console.log(rows);});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupCode('ah1 p s ay1 z', function (err, rows) {    console.log('lookupCode Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
 					
 					
 					
@@ -531,7 +665,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupWord('zebra', function (err, rows) {    console.log('lookupWord Results');    console.log(rows);});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupWord('zebra', function (err, rows) {    console.log('lookupWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
 					
 					
 					
@@ -585,6 +719,110 @@ ul.inheritsList
 						
 						
 
+					<hr />
+				
+					<a name="updateCode"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>updateCode</b>(updatedCode, oldCode, callback)
+					
+					</div>
+					<div class="description">
+						Fix typos in codes.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.updateCode('xo1 xo xo', 'xo xo xo1', function (err, rows) {    console.log('updateCode Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>updatedCode</b>
+									
+								</dt>
+								<dd>The corrected code.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>oldCode</b>
+									
+								</dt>
+								<dd>The misspelled code.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="updateWord"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>updateWord</b>(updatedWord, oldWord, callback)
+					
+					</div>
+					<div class="description">
+						Fix misspelled words or typos in words.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.updateWord('superfakewordzzz', 'superfakeword', function (err, rows) {    console.log('updateWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>updatedWord</b>
+									
+								</dt>
+								<dd>The corrected word.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>oldWord</b>
+									
+								</dt>
+								<dd>The misspelled word.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -599,7 +837,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat May 18 2013 18:14:45 GMT-0400 (EDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 19 2013 06:47:10 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>
