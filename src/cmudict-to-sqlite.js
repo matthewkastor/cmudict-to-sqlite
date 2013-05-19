@@ -65,6 +65,12 @@ function cmudictToArray (fileName) {
  * @requires cmudictToArray
  * @function
  * @param {String} fileName The name and location of the cmudict to parse.
+ * @see <a href="http://www.speech.cs.cmu.edu/cgi-bin/cmudict">
+ *  Carnegie Mellon University's information and download links for cmudict</a>
+ * @see <a href="http://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary">
+ *  Wikipedia's article on the CMU Pronouncing Dictionary</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Arpabet">
+ *  Wikipedia's ARPAbet article</a>
  * @example
  * // Converting the CMU Pronouncing Dictionary from the flat file `cmudict` into 
  * // an sqlite database:
@@ -111,6 +117,12 @@ function cmudictToSqliteDb (fileName) {
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130518
  * @see cmudictToSqliteDb
+ * @see <a href="http://www.speech.cs.cmu.edu/cgi-bin/cmudict">
+ *  Carnegie Mellon University's information and download links for cmudict</a>
+ * @see <a href="http://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary">
+ *  Wikipedia's article on the CMU Pronouncing Dictionary</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Arpabet">
+ *  Wikipedia's ARPAbet article</a>
  * @requires sqlite3
  */
 function CmudictDb (cmudictFile) {
