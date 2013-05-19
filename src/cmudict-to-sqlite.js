@@ -168,9 +168,12 @@ function CmudictDb (cmudictFile) {
         "fuzzyLookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word LIKE ?;"),
         "fuzzyLookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code LIKE ?;"),
         "addEntry" : my.db.prepare("INSERT INTO cmudict VALUES (?,?);"),
+        "addMetadata" : my.db.prepare("INSERT INTO metadata VALUES (?,?);"),
         "updateWord" : my.db.prepare("UPDATE cmudict SET word=? WHERE word=?;"),
+        "updateMetadata" : my.db.prepare("UPDATE metadata SET data=? WHERE name=?;"),
         "updateCode" : my.db.prepare("UPDATE cmudict SET code=? WHERE code=?;"),
-        "deleteEntry" : my.db.prepare("DELETE FROM cmudict WHERE word=?;")
+        "deleteEntry" : my.db.prepare("DELETE FROM cmudict WHERE word=?;"),
+        "deleteMetadata" : my.db.prepare("DELETE FROM metadata WHERE name=?;")
     };
 }
 /**
@@ -238,6 +241,29 @@ CmudictDb.prototype.saveAsText = function saveAsText (fileName, callback) {
             compileDictionary(rows[0].data.trim());
         }
     });
+};
+/**
+ * Searches for the given metadata.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} name The name of the metadata.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.lookupMetadata('license', function (err, rows) {
+ *     console.log('lookupMetadata Results');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
+ * });
+ */
+CmudictDb.prototype.lookupMetadata = function lookupMetadata (name, callback){
+    'use strict';
+    var my = this;
+    my.preparedStatements.lookupMetadata.all(name, callback);
 };
 /**
  * Searches for the given word.
@@ -343,7 +369,31 @@ CmudictDb.prototype.fuzzyLookupCode = function fuzzyLookupCode (code, callback) 
     my.preparedStatements.fuzzyLookupCode.all(code, callback);
 };
 /**
- * Adds a new record to the database.
+ * Adds a new record to the metadata table.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} name The name of the metadata
+ * @param {String} data The data associated with the metadata name.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.addMetadata('superfakeword', 'xo xo xo1', function (err, rows) {
+ *     console.log('addMetadata Results');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
+ * });
+ */
+CmudictDb.prototype.addMetadata = function addMetadata (name, data, callback) {
+    'use strict';
+    var my = this;
+    my.preparedStatements.addMetadata.all(name, data, callback);
+};
+/**
+ * Adds a new record to the cmudict table.
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130519
  * @param {String} word The word to add to the word field.
@@ -367,6 +417,30 @@ CmudictDb.prototype.addEntry = function addEntry (word, code, callback) {
     word = word.toUpperCase();
     code = code.toUpperCase();
     my.preparedStatements.addEntry.all(word, code, callback);
+};
+/**
+ * Update metadata entries.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} data The updated data
+ * @param {String} name The name of the metadata to update.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.updateMetadata('superfakeword', 'superfakeword', function (err, rows) {
+ *     console.log('updateMetadata Results');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
+ * });
+ */
+CmudictDb.prototype.updateMetadata = function updateMetadata (data, name, callback){
+    'use strict';
+    var my = this;
+    my.preparedStatements.updateMetadata.all(data, name, callback);
 };
 /**
  * Fix misspelled words or typos in words.
@@ -421,7 +495,30 @@ CmudictDb.prototype.updateCode = function updateCode (updatedCode, oldCode, call
     my.preparedStatements.updateCode.all(updatedCode, oldCode, callback);
 };
 /**
- * Delete a record from the database.
+ * Delete a record from the metadata table.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} name The metadata to remove.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.deleteEntry('superfakeword', function (err, rows) {
+ *     console.log('deleteEntry Results');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
+ * });
+ */
+CmudictDb.prototype.deleteMetadata = function deleteMetadata (name, callback){
+    'use strict';
+    var my = this;
+    my.preparedStatements.updateMetadata.all(name, callback);
+};
+/**
+ * Delete a record from the cmudict table.
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130519
  * @param {String} word The word to remove.
