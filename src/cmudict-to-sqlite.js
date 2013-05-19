@@ -76,12 +76,20 @@ function cmudictToArray (fileName) {
 function cmudictToSqliteDb (fileName) {
     'use strict';
     var sqlite3 = require('sqlite3').verbose();
-
+    var sql = {
+        "journalMode"   :   "PRAGMA journal_mode = MEMORY;",
+        "insert"        :   "INSERT INTO cmudict VALUES (?, ?)",
+        "dbCreate"      :   "CREATE TABLE cmudict ( " +
+                                "word TEXT PRIMARY KEY ASC " +
+                                    "NOT NULL ON CONFLICT ABORT " +
+                                    "UNIQUE ON CONFLICT ABORT, " +
+                                "code TEXT NOT NULL ON CONFLICT ABORT " +
+                            ");"
+    };
     var db = new sqlite3.Database(fileName + '.sqlite');
-    db.exec('PRAGMA journal_mode = MEMORY;');
-    
-    db.exec("CREATE TABLE cmudict (word TEXT, code TEXT)", function () {
-        var stmt = db.prepare("INSERT INTO cmudict VALUES (?, ?)");
+    db.exec(sql.journalMode);
+    db.exec(sql.dbCreate, function () {
+        var stmt = db.prepare(sql.insert);
         cmudictToArray(fileName).forEach(function(entry) {
             stmt.run(entry[0], entry[1]);
         });
@@ -115,8 +123,13 @@ function CmudictDb (cmudictFile) {
     my.preparedStatements = {
         "lookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word IS ?"),
         "lookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code IS ?"),
+        "findPhoneme" : my.db.prepare("SELECT * FROM cmudict WHERE code LIKE ?"),
         "fuzzyLookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word LIKE ?"),
-        "fuzzyLookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code LIKE ?")
+        "fuzzyLookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code LIKE ?"),
+        "addEntry" : my.db.prepare("INSERT INTO cmudict VALUES (?,?);"),
+        "updateWord" : my.db.prepare("UPDATE cmudict SET word=? WHERE word=?;"),
+        "updateCode" : my.db.prepare("UPDATE cmudict SET code=? WHERE code=?;"),
+        "deleteEntry" : my.db.prepare("DELETE FROM cmudict WHERE word=?;")
     };
 }
 /**
@@ -144,7 +157,8 @@ CmudictDb.prototype.unload = function unload () {
  * cmu = new cmu.CmudictDb();
  * cmu.lookupWord('zebra', function (err, rows) {
  *     console.log('lookupWord Results');
- *     console.log(rows);
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
  * });
  * // do other stuff with the database . . .
  * cmu.unload();
@@ -167,7 +181,8 @@ CmudictDb.prototype.lookupWord = function lookupWord (word, callback) {
  * cmu = new cmu.CmudictDb();
  * cmu.lookupCode('ah1 p s ay1 z', function (err, rows) {
  *     console.log('lookupCode Results');
- *     console.log(rows);
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
  * });
  * // do other stuff with the database . . .
  * cmu.unload();
@@ -177,6 +192,35 @@ CmudictDb.prototype.lookupCode = function lookupCode (code, callback) {
     var my = this;
     code = code.toUpperCase();
     my.preparedStatements.lookupCode.all(code, callback);
+};
+/**
+ * Searches for the given phoneme. Through creative use of wildcards, this 
+ *  method may be used to find assonance, consonance, rhyme, etc. Both, the 
+ *  underscore and percent symbol, will match any character. The underscore 
+ *  consumes a single character and the percent symbol consumes multiple 
+ *  characters.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} phoneme The phoneme to look for in the code field.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.findPhoneme('%r ah1 p t%', function (err, rows) {
+ *     // finds words containing the sound "rupt" i.e. erupt and corrupt
+ *     console.log('findPhoneme Results for %r ah1 p t%');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ * });
+ * // do other stuff with the database . . .
+ * cmu.unload();
+ */
+CmudictDb.prototype.findPhoneme = function findPhoneme (phoneme, callback) {
+    'use strict';
+    var my = this;
+    phoneme = phoneme.toUpperCase();
+    my.preparedStatements.findPhoneme.all(phoneme, callback);
 };
 /**
  * Searches words for the given pattern. Both, the underscore and percent 
@@ -192,7 +236,8 @@ CmudictDb.prototype.lookupCode = function lookupCode (code, callback) {
  * cmu = new cmu.CmudictDb();
  * cmu.fuzzyLookupWord('zeb%', function (err, rows) {
  *     console.log('fuzzyLookupWord Results');
- *     console.log(rows);
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
  * });
  * // do other stuff with the database . . .
  * cmu.unload();
@@ -217,7 +262,8 @@ CmudictDb.prototype.fuzzyLookupWord = function fuzzyLookupWord (word, callback) 
  * cmu = new cmu.CmudictDb();
  * cmu.fuzzyLookupCode('%s ay1 z%', function (err, rows) {
  *     console.log('fuzzyLookupCode Results');
- *     console.log(rows);
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
  * });
  * // do other stuff with the database . . .
  * cmu.unload();
@@ -227,6 +273,108 @@ CmudictDb.prototype.fuzzyLookupCode = function fuzzyLookupCode (code, callback) 
     var my = this;
     code = code.toUpperCase();
     my.preparedStatements.fuzzyLookupCode.all(code, callback);
+};
+/**
+ * Adds a new record to the database.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} word The word to add to the word field.
+ * @param {String} code The code to add to the code field.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.addEntry('superfakeword', 'xo xo xo1', function (err, rows) {
+ *     console.log('addEntry Results');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ * });
+ * // do other stuff with the database . . .
+ * cmu.unload();
+ */
+CmudictDb.prototype.addEntry = function addEntry (word, code, callback) {
+    'use strict';
+    var my = this;
+    word = word.toUpperCase();
+    code = code.toUpperCase();
+    my.preparedStatements.addEntry.all(word, code, callback);
+};
+/**
+ * Fix misspelled words or typos in words.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} updatedWord The corrected word.
+ * @param {String} oldWord The misspelled word.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.updateWord('superfakewordzzz', 'superfakeword', function (err, rows) {
+ *     console.log('updateWord Results');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ * });
+ * // do other stuff with the database . . .
+ * cmu.unload();
+ */
+CmudictDb.prototype.updateWord = function updateWord (updatedWord, oldWord, callback) {
+    'use strict';
+    var my = this;
+    updatedWord = updatedWord.toUpperCase();
+    oldWord = oldWord.toUpperCase();
+    my.preparedStatements.updateWord.all(updatedWord, oldWord, callback);
+};
+/**
+ * Fix typos in codes.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} updatedCode The corrected code.
+ * @param {String} oldCode The misspelled code.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.updateCode('xo1 xo xo', 'xo xo xo1', function (err, rows) {
+ *     console.log('updateCode Results');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ * });
+ * // do other stuff with the database . . .
+ * cmu.unload();
+ */
+CmudictDb.prototype.updateCode = function updateCode (updatedCode, oldCode, callback) {
+    'use strict';
+    var my = this;
+    updatedCode = updatedCode.toUpperCase();
+    oldCode = oldCode.toUpperCase();
+    my.preparedStatements.updateCode.all(updatedCode, oldCode, callback);
+};
+/**
+ * Delete a record from the database.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} word The word to remove.
+ * @param {Function} callback The callback to execute when results have been 
+ *  retreived. Takes two arguments: error and rows, in that order.
+ * @example
+ * var cmu = require('cmudict-to-sqlite');
+ * cmu = new cmu.CmudictDb();
+ * cmu.deleteEntry('superfakewordzzz', function (err, rows) {
+ *     console.log('deleteEntry Results');
+ *     if (err) { console.log(err); }
+ *     if (rows) { console.log(rows); }
+ * });
+ * // do other stuff with the database . . .
+ * cmu.unload();
+ */
+CmudictDb.prototype.deleteEntry = function deleteEntry (word, callback) {
+    'use strict';
+    var my = this;
+    word = word.toUpperCase();
+    my.preparedStatements.deleteEntry.all(word, callback);
 };
 
 
