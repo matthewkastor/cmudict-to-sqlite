@@ -19,12 +19,16 @@
  */
  
 /**
- * Reads the cmudict file into a JavaScript array
+ * Reads the cmudict file into a JavaScript array of arrays.
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130517
  * @requires fs
  * @function
  * @param {String} fileName The name and location of the cmudict to parse.
+ * @returns {Array} An array of arrays. Each element in the
+ *  array is an array with item 0 being the word and item 1 being the ARPAbet 
+ *  code. The array will also have a license property which contains the license
+ *  header from the given cmudict file.
  * @example
  * // Reading the CMU Pronouncing Dictionary from the flat file `cmudict` into 
  * // a JavaScript array:
@@ -45,15 +49,18 @@ function cmudictToArray (fileName) {
     'use strict';
     var fs = require('fs');
     var cmudict = fs.readFileSync(fileName, 'utf8');
-    
-    cmudict = cmudict.replace(/;;;.*/g, ''); // strip comments
     cmudict = cmudict.replace(/(\r\n|\r|\n)/g, '\n'); // normalize line endings
+    var license = cmudict.match(/;;;.*/g).reduce(function (prev, curr){
+        return prev + curr + '\n';
+    },'');
+    cmudict = cmudict.replace(/;;;.*/g, ''); // strip comments
     cmudict = cmudict.trim(); // remove superfluous white space
     cmudict = cmudict.split('\n'); // split into array of lines
     cmudict = cmudict.map(function(line) {
         return line.split('  ');
     }); // array items subdivided into word @ 0 code @ 1
     
+    cmudict.license = license;
     return cmudict;
 }
 
@@ -81,29 +88,50 @@ function cmudictToArray (fileName) {
  */
 function cmudictToSqliteDb (fileName) {
     'use strict';
+    var cmudict = cmudictToArray(fileName);
     var sqlite3 = require('sqlite3').verbose();
     var sql = {
         "journalMode"   :   "PRAGMA journal_mode = MEMORY;",
         "insert"        :   "INSERT INTO cmudict VALUES (?, ?)",
-        "dbCreate"      :   "CREATE TABLE cmudict ( " +
+        "insertMetadata":   "INSERT INTO metadata VALUES (?, ?)",
+        "cmuDictTable"  :   "CREATE TABLE cmudict ( " +
                                 "word TEXT PRIMARY KEY ASC " +
                                     "NOT NULL ON CONFLICT ABORT " +
                                     "UNIQUE ON CONFLICT ABORT, " +
                                 "code TEXT NOT NULL ON CONFLICT ABORT " +
+                            ");",
+        "metaTable"     :   "CREATE TABLE metadata ( " +
+                                "name TEXT PRIMARY KEY ASC " +
+                                    "NOT NULL ON CONFLICT ABORT " +
+                                    "UNIQUE ON CONFLICT ABORT, " +
+                                "data TEXT NOT NULL ON CONFLICT ABORT " +
                             ");"
     };
+    var metadata = {
+        "license" : cmudict.license
+    };
     var db = new sqlite3.Database(fileName + '.sqlite');
-    db.exec(sql.journalMode);
-    db.exec(sql.dbCreate, function () {
-        var stmt = db.prepare(sql.insert);
-        cmudictToArray(fileName).forEach(function(entry) {
-            stmt.run(entry[0], entry[1]);
+    db.exec(sql.journalMode, function (err) {                // set journal mode
+        if(err) { console.log(err); }
+        db.exec(sql.metaTable, function (err) {         // create metadata table
+            if(err) { console.log(err); }
+            var stmt = db.prepare(sql.insertMetadata);
+            Object.keys(metadata).forEach(function(name) {    // insert metadata
+                stmt.run(name, metadata[name]);
+            });
+            stmt.finalize();
+            db.exec(sql.cmuDictTable, function (err) {   // create cmudict table
+                if(err) { console.log(err); }
+                var stmt = db.prepare(sql.insert);     // insert cmudict entries
+                cmudict.forEach(function(entry) {
+                    stmt.run(entry[0], entry[1]);
+                });
+                stmt.finalize();
+                db.close();                                    // close database
+            });
         });
-        stmt.finalize();
-        db.close();
     });
 }
-
 /**
  * Represents the cmudict database and provides convenience methods for common 
  *  tasks. When creating a new instance of the 
@@ -133,10 +161,12 @@ function CmudictDb (cmudictFile) {
     my.db = new sqlite3.Database(cmudictFile);
     my.db.exec('PRAGMA journal_mode = MEMORY;');
     my.preparedStatements = {
-        "lookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word IS ?"),
-        "lookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code IS ?"),
-        "fuzzyLookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word LIKE ?"),
-        "fuzzyLookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code LIKE ?"),
+        "saveAsText" : my.db.prepare("SELECT * FROM cmudict;"),
+        "lookupMetadata" : my.db.prepare("SELECT data FROM metadata WHERE name=?;"),
+        "lookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word IS ?;"),
+        "lookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code IS ?;"),
+        "fuzzyLookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word LIKE ?;"),
+        "fuzzyLookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code LIKE ?;"),
         "addEntry" : my.db.prepare("INSERT INTO cmudict VALUES (?,?);"),
         "updateWord" : my.db.prepare("UPDATE cmudict SET word=? WHERE word=?;"),
         "updateCode" : my.db.prepare("UPDATE cmudict SET code=? WHERE code=?;"),
@@ -155,6 +185,59 @@ CmudictDb.prototype.unload = function unload () {
         my.preparedStatements[stmt].finalize();
     });
     my.db.close();
+};
+/**
+ * Saves the contents of the database as a text file using the same format as the 
+ *  original cmudict.
+ * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
+ * @version 20130519
+ * @param {String} fileName The name and location of the output file.
+ * @param {Function} callback The callback to execute after the file is 
+ *  written. The callback will be called with one argument, the string which 
+ *  was written to file.
+ * @example
+ *  var cmu = require('cmudict-to-sqlite');
+ *  cmu = new cmu.CmudictDb();
+ *  cmu.saveAsText('cmudict.txt', function(content) {
+ *      // if you want to see what was written to the file
+ *      // uncomment the next line.
+ *      // console.log(content);
+ *      // do other stuff with the database . . .
+ *      cmu.unload();
+ *  });
+ */
+CmudictDb.prototype.saveAsText = function saveAsText (fileName, callback) {
+    'use strict';
+    var my = this;
+    var fs = require('fs');
+    function writeToFile (fileName, output, callback) {
+        fs.writeFile(fileName, output, {'encoding' : 'utf8'}, function (err) {
+            if(err) {
+                throw err;
+            } else {
+                if(callback) { callback(output); }
+            }
+        });
+    }
+    function compileDictionary (license) {
+        my.preparedStatements.saveAsText.all(function (err, rows) {
+            var output = license || '';
+            if (err) { console.log(err); }
+            if (rows) {
+                output += '\n';
+                output += rows.reduce(function (prev, curr) {
+                    return prev + curr.word + '  ' + curr.code + '\n';
+                }, '');
+                writeToFile(fileName, output, callback);
+            }
+        });
+    }
+    my.preparedStatements.lookupMetadata.all('license', function (err, rows) {
+        if (err) { console.log(err); }
+        if (rows) {
+            compileDictionary(rows[0].data.trim());
+        }
+    });
 };
 /**
  * Searches for the given word.
