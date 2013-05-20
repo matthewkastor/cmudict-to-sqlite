@@ -162,7 +162,7 @@ function CmudictDb (cmudictFile) {
     my.db.exec('PRAGMA journal_mode = MEMORY;');
     my.preparedStatements = {
         "saveAsText" : my.db.prepare("SELECT * FROM cmudict;"),
-        "lookupMetadata" : my.db.prepare("SELECT data FROM metadata WHERE name=?;"),
+        "lookupMetadata" : my.db.prepare("SELECT * FROM metadata WHERE name=?;"),
         "lookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word IS ?;"),
         "lookupCode" : my.db.prepare("SELECT * FROM cmudict WHERE code IS ?;"),
         "fuzzyLookupWord" : my.db.prepare("SELECT * FROM cmudict WHERE word LIKE ?;"),
@@ -504,7 +504,7 @@ CmudictDb.prototype.updateCode = function updateCode (updatedCode, oldCode, call
  * @example
  * var cmu = require('cmudict-to-sqlite');
  * cmu = new cmu.CmudictDb();
- * cmu.deleteEntry('superfakeword', function (err, rows) {
+ * cmu.deleteMetadata('superfakeword', function (err, rows) {
  *     console.log('deleteEntry Results');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
@@ -515,7 +515,7 @@ CmudictDb.prototype.updateCode = function updateCode (updatedCode, oldCode, call
 CmudictDb.prototype.deleteMetadata = function deleteMetadata (name, callback){
     'use strict';
     var my = this;
-    my.preparedStatements.updateMetadata.all(name, callback);
+    my.preparedStatements.deleteMetadata.all(name, callback);
 };
 /**
  * Delete a record from the cmudict table.
