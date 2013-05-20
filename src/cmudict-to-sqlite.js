@@ -137,7 +137,10 @@ function cmudictToSqliteDb (fileName) {
  *  tasks. When creating a new instance of the 
  *  CmudictDb the given database file will be opened and several prepared 
  *  statements will be loaded. Be sure to call the unload method when you are 
- *  finished using the database so that the database may be closed properly.
+ *  finished using the database so that the database may be closed properly. 
+ *  The dictionary is stored in the cmudict table and information, including 
+ *  the license for the CMU Pronunciation Dictionary itself, is stored in the 
+ *  metadata table.
  * @class Represents the cmudict database and provides convenience methods for 
  * common tasks.
  * @param {String} cmudictFile Optional. The name and location of the cmudict 
@@ -191,7 +194,9 @@ CmudictDb.prototype.unload = function unload () {
 };
 /**
  * Saves the contents of the database as a text file using the same format as the 
- *  original cmudict.
+ *  original cmudict. The contents of metadata.license will be prepended to the 
+ *  beginning of the file, change it if you want to add information to the 
+ *  license.
  * @author <a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>
  * @version 20130519
  * @param {String} fileName The name and location of the output file.
