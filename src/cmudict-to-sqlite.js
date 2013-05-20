@@ -279,9 +279,9 @@ CmudictDb.prototype.lookupMetadata = function lookupMetadata (name, callback){
  *     console.log('lookupWord Results');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
  * });
- * // do other stuff with the database . . .
- * cmu.unload();
  */
 CmudictDb.prototype.lookupWord = function lookupWord (word, callback) {
     'use strict';
@@ -303,9 +303,9 @@ CmudictDb.prototype.lookupWord = function lookupWord (word, callback) {
  *     console.log('lookupCode Results');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
  * });
- * // do other stuff with the database . . .
- * cmu.unload();
  */
 CmudictDb.prototype.lookupCode = function lookupCode (code, callback) {
     'use strict';
@@ -329,9 +329,9 @@ CmudictDb.prototype.lookupCode = function lookupCode (code, callback) {
  *     console.log('fuzzyLookupWord Results');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
  * });
- * // do other stuff with the database . . .
- * cmu.unload();
  */
 CmudictDb.prototype.fuzzyLookupWord = function fuzzyLookupWord (word, callback) {
     'use strict';
@@ -358,9 +358,9 @@ CmudictDb.prototype.fuzzyLookupWord = function fuzzyLookupWord (word, callback) 
  *     console.log('fuzzyLookupCode Results for %r ah1 p t%');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
  * });
- * // do other stuff with the database . . .
- * cmu.unload();
  */
 CmudictDb.prototype.fuzzyLookupCode = function fuzzyLookupCode (code, callback) {
     'use strict';
@@ -407,9 +407,9 @@ CmudictDb.prototype.addMetadata = function addMetadata (name, data, callback) {
  *     console.log('addEntry Results');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
  * });
- * // do other stuff with the database . . .
- * cmu.unload();
  */
 CmudictDb.prototype.addEntry = function addEntry (word, code, callback) {
     'use strict';
@@ -457,9 +457,9 @@ CmudictDb.prototype.updateMetadata = function updateMetadata (data, name, callba
  *     console.log('updateWord Results');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
  * });
- * // do other stuff with the database . . .
- * cmu.unload();
  */
 CmudictDb.prototype.updateWord = function updateWord (updatedWord, oldWord, callback) {
     'use strict';
@@ -483,9 +483,9 @@ CmudictDb.prototype.updateWord = function updateWord (updatedWord, oldWord, call
  *     console.log('updateCode Results');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
  * });
- * // do other stuff with the database . . .
- * cmu.unload();
  */
 CmudictDb.prototype.updateCode = function updateCode (updatedCode, oldCode, callback) {
     'use strict';
@@ -531,9 +531,9 @@ CmudictDb.prototype.deleteMetadata = function deleteMetadata (name, callback){
  *     console.log('deleteEntry Results');
  *     if (err) { console.log(err); }
  *     if (rows) { console.log(rows); }
+ *     // do other stuff with the database . . .
+ *     cmu.unload();
  * });
- * // do other stuff with the database . . .
- * cmu.unload();
  */
 CmudictDb.prototype.deleteEntry = function deleteEntry (word, callback) {
     'use strict';
