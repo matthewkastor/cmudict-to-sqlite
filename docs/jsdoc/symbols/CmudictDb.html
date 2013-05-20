@@ -265,7 +265,16 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#addEntry">addEntry</a></b>(word, code, callback)
 								</div>
-								<div class="description">Adds a new record to the database.</div>
+								<div class="description">Adds a new record to the cmudict table.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#addMetadata">addMetadata</a></b>(name, data, callback)
+								</div>
+								<div class="description">Adds a new record to the metadata table.</div>
 							</td>
 						</tr>
 					
@@ -274,7 +283,16 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#deleteEntry">deleteEntry</a></b>(word, callback)
 								</div>
-								<div class="description">Delete a record from the database.</div>
+								<div class="description">Delete a record from the cmudict table.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#deleteMetadata">deleteMetadata</a></b>(name, callback)
+								</div>
+								<div class="description">Delete a record from the metadata table.</div>
 							</td>
 						</tr>
 					
@@ -308,9 +326,27 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#lookupMetadata">lookupMetadata</a></b>(name, callback)
+								</div>
+								<div class="description">Searches for the given metadata.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#lookupWord">lookupWord</a></b>(word, callback)
 								</div>
 								<div class="description">Searches for the given word.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#saveAsText">saveAsText</a></b>(fileName, callback)
+								</div>
+								<div class="description">Saves the contents of the database as a text file using the same format as the  original cmudict.</div>
 							</td>
 						</tr>
 					
@@ -329,6 +365,15 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#updateCode">updateCode</a></b>(updatedCode, oldCode, callback)
 								</div>
 								<div class="description">Fix typos in codes.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CmudictDb.html#updateMetadata">updateMetadata</a></b>(data, name, callback)
+								</div>
+								<div class="description">Update metadata entries.</div>
 							</td>
 						</tr>
 					
@@ -362,7 +407,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="description">
-					Represents the cmudict database and provides convenience methods for common  tasks. When creating a new instance of the  CmudictDb the given database file will be opened and several prepared  statements will be loaded. Be sure to call the unload method when you are  finished using the database so that the database may be closed properly.
+					Represents the cmudict database and provides convenience methods for common  tasks. When creating a new instance of the  CmudictDb the given database file will be opened and several prepared  statements will be loaded. Be sure to call the unload method when you are  finished using the database so that the database may be closed properly.  The dictionary is stored in the cmudict table and information, including  the license for the CMU Pronunciation Dictionary itself, is stored in the  metadata table.
 					<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
 				</div>
 				
@@ -428,14 +473,14 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Adds a new record to the database.
+						Adds a new record to the cmudict table.
 						
 						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
 					</div>
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.addEntry('superfakeword', 'xo xo xo1', function (err, rows) {    console.log('addEntry Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.addEntry('superfakeword', 'xo xo xo1', function (err, rows) {    console.log('addEntry Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
 					
 					
 					
@@ -472,6 +517,58 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="addMetadata"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>addMetadata</b>(name, data, callback)
+					
+					</div>
+					<div class="description">
+						Adds a new record to the metadata table.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.addMetadata('superfakeword', 'xo xo xo1', function (err, rows) {    console.log('addMetadata Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>name</b>
+									
+								</dt>
+								<dd>The name of the metadata</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>data</b>
+									
+								</dt>
+								<dd>The data associated with the metadata name.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="deleteEntry"> </a>
 					<div class="fixedFont">
 					
@@ -480,14 +577,14 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Delete a record from the database.
+						Delete a record from the cmudict table.
 						
 						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
 					</div>
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.deleteEntry('superfakewordzzz', function (err, rows) {    console.log('deleteEntry Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.deleteEntry('superfakewordzzz', function (err, rows) {    console.log('deleteEntry Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
 					
 					
 					
@@ -500,6 +597,52 @@ ul.inheritsList
 									
 								</dt>
 								<dd>The word to remove.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="deleteMetadata"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>deleteMetadata</b>(name, callback)
+					
+					</div>
+					<div class="description">
+						Delete a record from the metadata table.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.deleteMetadata('superfakeword', function (err, rows) {    console.log('deleteEntry Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>name</b>
+									
+								</dt>
+								<dd>The metadata to remove.</dd>
 							
 								<dt>
 									<span class="light fixedFont">{Function}</span> <b>callback</b>
@@ -533,7 +676,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.fuzzyLookupCode('%r ah1 p t%', function (err, rows) {    // finds words containing the sound "rupt" i.e. erupt and corrupt    console.log('fuzzyLookupCode Results for %r ah1 p t%');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.fuzzyLookupCode('%r ah1 p t%', function (err, rows) {    // finds words containing the sound "rupt" i.e. erupt and corrupt    console.log('fuzzyLookupCode Results for %r ah1 p t%');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
 					
 					
 					
@@ -579,7 +722,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.fuzzyLookupWord('zeb%', function (err, rows) {    console.log('fuzzyLookupWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.fuzzyLookupWord('zeb%', function (err, rows) {    console.log('fuzzyLookupWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
 					
 					
 					
@@ -625,7 +768,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupCode('ah1 p s ay1 z', function (err, rows) {    console.log('lookupCode Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupCode('ah1 p s ay1 z', function (err, rows) {    console.log('lookupCode Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
 					
 					
 					
@@ -638,6 +781,52 @@ ul.inheritsList
 									
 								</dt>
 								<dd>The code to look for in the code field.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="lookupMetadata"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>lookupMetadata</b>(name, callback)
+					
+					</div>
+					<div class="description">
+						Searches for the given metadata.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupMetadata('license', function (err, rows) {    console.log('lookupMetadata Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>name</b>
+									
+								</dt>
+								<dd>The name of the metadata.</dd>
 							
 								<dt>
 									<span class="light fixedFont">{Function}</span> <b>callback</b>
@@ -671,7 +860,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupWord('zebra', function (err, rows) {    console.log('lookupWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.lookupWord('zebra', function (err, rows) {    console.log('lookupWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
 					
 					
 					
@@ -690,6 +879,52 @@ ul.inheritsList
 									
 								</dt>
 								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="saveAsText"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>saveAsText</b>(fileName, callback)
+					
+					</div>
+					<div class="description">
+						Saves the contents of the database as a text file using the same format as the  original cmudict. The contents of metadata.license will be prepended to the  beginning of the file, change it if you want to add information to the  license.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code"> var cmu = require('cmudict-to-sqlite'); cmu = new cmu.CmudictDb(); cmu.saveAsText('cmudict.txt', function(content) {     // if you want to see what was written to the file     // uncomment the next line.     // console.log(content);     // do other stuff with the database . . .     cmu.unload(); });</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>fileName</b>
+									
+								</dt>
+								<dd>The name and location of the output file.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute after the file is  written. The callback will be called with one argument, the string which  was written to file.</dd>
 							
 							</dl>
 						
@@ -742,7 +977,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.updateCode('xo1 xo xo', 'xo xo xo1', function (err, rows) {    console.log('updateCode Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.updateCode('xo1 xo xo', 'xo xo xo1', function (err, rows) {    console.log('updateCode Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
 					
 					
 					
@@ -779,6 +1014,58 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="updateMetadata"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>updateMetadata</b>(data, name, callback)
+					
+					</div>
+					<div class="description">
+						Update metadata entries.
+						
+						<br /><i>Author: </i><a href="mailto:matthewkastor@gmail.com">Matthew Kastor</a>.
+					</div>
+					
+					
+					
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.updateMetadata('superfakeword', 'superfakeword', function (err, rows) {    console.log('updateMetadata Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>data</b>
+									
+								</dt>
+								<dd>The updated data</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>name</b>
+									
+								</dt>
+								<dd>The name of the metadata to update.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to execute when results have been  retreived. Takes two arguments: error and rows, in that order.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="updateWord"> </a>
 					<div class="fixedFont">
 					
@@ -794,7 +1081,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.updateWord('superfakewordzzz', 'superfakeword', function (err, rows) {    console.log('updateWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }});// do other stuff with the database . . .cmu.unload();</pre>
+					<pre class="code">var cmu = require('cmudict-to-sqlite');cmu = new cmu.CmudictDb();cmu.updateWord('superfakewordzzz', 'superfakeword', function (err, rows) {    console.log('updateWord Results');    if (err) { console.log(err); }    if (rows) { console.log(rows); }    // do other stuff with the database . . .    cmu.unload();});</pre>
 					
 					
 					
@@ -843,7 +1130,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 19 2013 07:55:39 GMT-0400 (EDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 19 2013 20:40:10 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>

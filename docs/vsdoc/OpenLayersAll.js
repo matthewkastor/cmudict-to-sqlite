@@ -10,8 +10,12 @@
         /// <returns type="_global_"/>
                 
         cmudictToArray: function(fileName) {
-            /// <summary>Reads the cmudict file into a JavaScript array</summary>
+            /// <summary>Reads the cmudict file into a JavaScript array of arrays.</summary>
             /// <param name="fileName" type="String">The name and location of the cmudict to parse.</param>
+            /// <returns type="Array">An array of arrays. Each element in the
+            ///  array is an array with item 0 being the word and item 1 being the ARPAbet 
+            ///  code. The array will also have a license property which contains the license
+            ///  header from the given cmudict file.</returns>
         }, 
         
         cmudictToSqliteDb: function(fileName) {
@@ -49,6 +53,24 @@
             /// <summary>Finalizes all preparedStatements and closes the database.</summary>
         }, 
         
+        saveAsText: function(fileName, callback) {
+            /// <summary>Saves the contents of the database as a text file using the same format as the 
+            ///  original cmudict. The contents of metadata.license will be prepended to the 
+            ///  beginning of the file, change it if you want to add information to the 
+            ///  license.</summary>
+            /// <param name="fileName" type="String">The name and location of the output file.</param>
+            /// <param name="callback" type="Function">The callback to execute after the file is 
+            ///  written. The callback will be called with one argument, the string which 
+            ///  was written to file.</param>
+        }, 
+        
+        lookupMetadata: function(name, callback) {
+            /// <summary>Searches for the given metadata.</summary>
+            /// <param name="name" type="String">The name of the metadata.</param>
+            /// <param name="callback" type="Function">The callback to execute when results have been 
+            ///  retreived. Takes two arguments: error and rows, in that order.</param>
+        }, 
+        
         lookupWord: function(word, callback) {
             /// <summary>Searches for the given word.</summary>
             /// <param name="word" type="String">The word to look for in the words field.</param>
@@ -83,10 +105,26 @@
             ///  retreived. Takes two arguments: error and rows, in that order.</param>
         }, 
         
+        addMetadata: function(name, data, callback) {
+            /// <summary>Adds a new record to the metadata table.</summary>
+            /// <param name="name" type="String">The name of the metadata</param>
+            /// <param name="data" type="String">The data associated with the metadata name.</param>
+            /// <param name="callback" type="Function">The callback to execute when results have been 
+            ///  retreived. Takes two arguments: error and rows, in that order.</param>
+        }, 
+        
         addEntry: function(word, code, callback) {
-            /// <summary>Adds a new record to the database.</summary>
+            /// <summary>Adds a new record to the cmudict table.</summary>
             /// <param name="word" type="String">The word to add to the word field.</param>
             /// <param name="code" type="String">The code to add to the code field.</param>
+            /// <param name="callback" type="Function">The callback to execute when results have been 
+            ///  retreived. Takes two arguments: error and rows, in that order.</param>
+        }, 
+        
+        updateMetadata: function(data, name, callback) {
+            /// <summary>Update metadata entries.</summary>
+            /// <param name="data" type="String">The updated data</param>
+            /// <param name="name" type="String">The name of the metadata to update.</param>
             /// <param name="callback" type="Function">The callback to execute when results have been 
             ///  retreived. Takes two arguments: error and rows, in that order.</param>
         }, 
@@ -107,8 +145,15 @@
             ///  retreived. Takes two arguments: error and rows, in that order.</param>
         }, 
         
+        "delete": function(name, callback) {
+            /// <summary>Delete a record from the metadata table.</summary>
+            /// <param name="name" type="String">The metadata to remove.</param>
+            /// <param name="callback" type="Function">The callback to execute when results have been 
+            ///  retreived. Takes two arguments: error and rows, in that order.</param>
+        }, 
+        
         "delete": function(word, callback) {
-            /// <summary>Delete a record from the database.</summary>
+            /// <summary>Delete a record from the cmudict table.</summary>
             /// <param name="word" type="String">The word to remove.</param>
             /// <param name="callback" type="Function">The callback to execute when results have been 
             ///  retreived. Takes two arguments: error and rows, in that order.</param>
