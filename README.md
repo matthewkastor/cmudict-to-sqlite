@@ -1,9 +1,7 @@
 #cmudict-to-sqlite
 
 A utility for parsing the CMU Pronouncing Dictionary into an sqlite database 
-using Node.js
-
-Also included is a helper class for looking up information in the database and 
+using Node.js. Also included is a helper class for looking up information in the database and 
 manipulating it.
 
 > The CMU Pronouncing Dictionary (also known as cmudict) is a public domain 
@@ -55,13 +53,13 @@ are available for looking up and manipulating the data. I've found
 management in SQLite. 
 
 I have however, written a small class called CmudictDb for accessing the 
-database and looking up information in it. So don't worry, you can look 
+database and manipulating the information in it. So don't worry, you can look 
 up information without learning any sql... just this random javascript 
 thing I'm making up as I go along... The class is documented in the 
 documentation which accompanies this here Node.js module and since I 
 absolutely hate massive README files I'm not going to copy and paste it 
 here. See the link below if you're just itching to read the docs online, 
-right now. :D 
+right now.
 
 
 
