@@ -89,7 +89,7 @@ but, it's much more difficult to query an array than it is to query a database.
 ## Intellisense Support and Documentation
 
 Visual studio intellisense support is available in docs/vsdoc/OpenLayersAll.js
-Full documentation may be found at [http://matthewkastor.github.com/cmudict-to-sqlite](http://matthewkastor.github.com/cmudict-to-sqlite)
+Full documentation may be found at [http://matthewkastor.github.io/cmudict-to-sqlite](http://matthewkastor.github.io/cmudict-to-sqlite)
 See also 
 [The Music in Plain Speech and Writing.pdf](http://matthewkastor.github.io/cmudict-to-sqlite/The Music in Plain Speech and Writing.pdf) 
 located in the root of this module.
