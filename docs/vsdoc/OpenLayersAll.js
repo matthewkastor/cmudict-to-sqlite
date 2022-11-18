@@ -40,10 +40,16 @@
     
 
     window.CmudictDb = function(cmudictFile){
-        /// <summary></summary>
+        /// <summary>Represents the cmudict database and provides convenience methods for common 
+        /// ///  tasks. When creating a new instance of the 
+        /// ///  CmudictDb the given database file will be opened and several prepared 
+        /// ///  statements will be loaded. Be sure to call the unload method when you are 
+        /// ///  finished using the database so that the database may be closed properly. 
+        /// ///  The dictionary is stored in the cmudict table and information, including 
+        /// ///  the license for the CMU Pronunciation Dictionary itself, is stored in the 
+        /// ///  metadata table.</summary>
         /// <param name="cmudictFile" type="String">Optional. The name and location of the cmudict 
         ///  database generated with cmudictToSqliteDb. Defaults to cmudict.0.7a.sqlite.</param>
-        /// <returns type="CmudictDb"/>
     };
 
     var $x = window.CmudictDb;
@@ -145,14 +151,14 @@
             ///  retreived. Takes two arguments: error and rows, in that order.</param>
         }, 
         
-        "delete": function(name, callback) {
+        deleteMetadata: function(name, callback) {
             /// <summary>Delete a record from the metadata table.</summary>
             /// <param name="name" type="String">The metadata to remove.</param>
             /// <param name="callback" type="Function">The callback to execute when results have been 
             ///  retreived. Takes two arguments: error and rows, in that order.</param>
         }, 
         
-        "delete": function(word, callback) {
+        deleteEntry: function(word, callback) {
             /// <summary>Delete a record from the cmudict table.</summary>
             /// <param name="word" type="String">The word to remove.</param>
             /// <param name="callback" type="Function">The callback to execute when results have been 

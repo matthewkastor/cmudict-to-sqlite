@@ -1,25 +1,38 @@
 {
-                    
-    "name"          : "cmudict-to-sqlite",
-    "version"       : "0.4.1",
-    "main"          : "./src/cmudict-to-sqlite.js",
-    "description"   : "A utility for parsing the CMU Pronouncing Dictionary into an sqlite database using Node.js. Also included is a helper class for looking up information in the database and manipulating it.",
-    "keywords"      : ["cmudict", "CMU Pronouncing Dictionary", "nlp", "language", "linguistics", "atropa"],
-    "homepage"      : "https://github.com/matthewkastor/cmudict-to-sqlite/",
-    "bugs"          : "https://github.com/matthewkastor/cmudict-to-sqlite/issues",
-    "author"        : {
-                        "name"      : "Matthew Kastor",
-                        "email"     : "matthewkastor@gmail.com",
-                        "url"       : "https://plus.google.com/100898583798552211130"
-    },
-    "repository"    : {
-                        "type"      : "git",
-                        "url"       : "git://github.com/matthewkastor/cmudict-to-sqlite.git"
-    },
-    "engines"       : {
-                        "node"      : ">=0.8.14"
-    },
-    "dependencies"  : {
-                        "sqlite3" : ">=2.1.7"
-    }
+          "name": "cmudict-to-sqlite",
+          "version": "0.4.1",
+          "main": "./src/cmudict-to-sqlite.js",
+          "description": "A utility for parsing the CMU Pronouncing Dictionary into an sqlite database using Node.js. Also included is a helper class for looking up information in the database and manipulating it.",
+          "keywords": [
+                    "cmudict",
+                    "CMU Pronouncing Dictionary",
+                    "nlp",
+                    "language",
+                    "linguistics",
+                    "atropa"
+          ],
+          "homepage": "https://github.com/matthewkastor/cmudict-to-sqlite/",
+          "bugs": "https://github.com/matthewkastor/cmudict-to-sqlite/issues",
+          "author": {
+                    "name": "Matthew Kastor",
+                    "email": "matthewkastor@gmail.com",
+                    "url": "https://plus.google.com/100898583798552211130"
+          },
+          "repository": {
+                    "type": "git",
+                    "url": "git://github.com/matthewkastor/cmudict-to-sqlite.git"
+          },
+          "engines": {
+                    "node": ">=0.8.14"
+          },
+          "dependencies": {
+                    "sqlite3": ">=2.1.7"
+          },
+          "devDependencies": {
+                    "jsdoc-toolkit": "git+https://github.com/matthewkastor/node-jsdoc-toolkit.git#fix-tests"
+          },
+          "scripts": {
+                    "buildDocs": "jsdoc-toolkit -v -d=./docs/jsdoc/ -r -s src/",
+                    "buildVsdocs": "jsdoc-toolkit -v -d=./docs/vsdoc/ -t=./node_modules/jsdoc-toolkit/templates/vsdoc/ -r -s src/"
+          }
 }
